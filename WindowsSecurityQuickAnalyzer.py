@@ -34,6 +34,10 @@ def check_open_ports():
     output = subprocess.run(['powershell', '-Command', 'Get-NetTCPConnection | Where-Object {$_.State -eq "Listen"}'], capture_output=True, text=True)
     return output.stdout.strip()
 
+def check_security_patches():
+    output = subprocess.run(['powershell', '-Command', 'Get-HotFix | Select-Object Description, HotFixID, InstalledOn'], capture_output=True, text=True)
+    return output.stdout.strip()
+
 def main():
     print("Análise de Segurança do Windows\n")
     print("1. Antivírus Ativo:", "Sim" if check_antivirus() else "Não")
@@ -43,6 +47,7 @@ def main():
     print("5. Programas de Inicialização:", check_startup_programs())
     print("6. Serviços do Windows:", check_windows_services())
     print("7. Portas Abertas:", check_open_ports())
+    print("8. Patches de Segurança:", check_security_patches())
 
 if __name__ == "__main__":
     main()
