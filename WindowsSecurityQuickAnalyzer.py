@@ -20,7 +20,7 @@ def check_firewall():
 
 def check_uac():
     output = subprocess.run(['powershell', '-Command', 'Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System | Select-Object -ExpandProperty EnableLUA'], capture_output=True, text=True)
-    return "Ativado" if output.stdout.strip() == "1" else "Desativado"
+    return output.stdout.strip() == "1"
 
 def check_startup_programs():
     output = subprocess.run(['powershell', '-Command', 'Get-CimInstance Win32_StartupCommand | Select-Object Name, Command, Location, User'], capture_output=True, text=True)
