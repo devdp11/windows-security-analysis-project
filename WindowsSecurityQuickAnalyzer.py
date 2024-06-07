@@ -22,12 +22,17 @@ def check_uac():
     output = subprocess.run(['powershell', '-Command', 'Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System | Select-Object -ExpandProperty EnableLUA'], capture_output=True, text=True)
     return output.stdout.strip() == "1"
 
+def check_startup_programs():
+    output = subprocess.run(['powershell', '-Command', 'Get-CimInstance Win32_StartupCommand | Select-Object Name, Command, Location, User'], capture_output=True, text=True)
+    return output.stdout.strip()
+
 def main():
     print("Análise de Segurança do Windows\n")
     print("1. Antivírus Ativo:", "Sim" if check_antivirus() else "Não")
     print("2. Atualizações do Windows:", "Pendentes" if check_windows_updates() else "Nenhuma pendente")
     print("3. Firewall do Windows:", "Ativado" if check_firewall() else "Desativado")
-    print("4. Controlo da Conta do utilizador (UAC):", "Ativado" if check_uac() else "Desativado")
+    print("4. Controlo do Conta do utilizador (UAC):", "Ativado" if check_uac() else "Desativado")
+    print("5. Programas de Inicialização:", check_startup_programs())
 
 if __name__ == "__main__":
     main()
