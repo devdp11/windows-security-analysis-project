@@ -20,10 +20,18 @@ def check_firewall():
 
 def check_uac():
     output = subprocess.run(['powershell', '-Command', 'Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System | Select-Object -ExpandProperty EnableLUA'], capture_output=True, text=True)
-    return output.stdout.strip() == "1"
+    return "Ativado" if output.stdout.strip() == "1" else "Desativado"
 
 def check_startup_programs():
     output = subprocess.run(['powershell', '-Command', 'Get-CimInstance Win32_StartupCommand | Select-Object Name, Command, Location, User'], capture_output=True, text=True)
+    return output.stdout.strip()
+
+def check_windows_services():
+    output = subprocess.run(['powershell', '-Command', 'Get-Service | Where-Object {$_.Status -eq "Running"} | Format-Table Name, DisplayName, StartType, Status -AutoSize'], capture_output=True, text=True)
+    return output.stdout.strip()
+
+def check_open_ports():
+    output = subprocess.run(['powershell', '-Command', 'Get-NetTCPConnection | Where-Object {$_.State -eq "Listen"}'], capture_output=True, text=True)
     return output.stdout.strip()
 
 def main():
@@ -33,6 +41,8 @@ def main():
     print("3. Firewall do Windows:", "Ativado" if check_firewall() else "Desativado")
     print("4. Controlo do Conta do utilizador (UAC):", "Ativado" if check_uac() else "Desativado")
     print("5. Programas de Inicialização:", check_startup_programs())
+    print("6. Serviços do Windows:", check_windows_services())
+    print("7. Portas Abertas:", check_open_ports())
 
 if __name__ == "__main__":
     main()
