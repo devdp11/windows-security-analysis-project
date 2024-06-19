@@ -88,6 +88,15 @@ def check_disk_encryption():
     except Exception as e:
         return f"Erro desconhecido: {str(e)}"
 
+def check_critical_services():
+    services = ["wuauserv", "windefend"]  # Windows Update Service, Windows Defender Service
+    results = []
+    for service in services:
+        command = ['powershell', '-Command', f'Get-Service -Name {service} | Select-Object Name, Status']
+        output = run_command(command)
+        results.append(output)
+    return "Status dos serviços críticos:\n" + "\n".join(results)
+
 def check_all():
     results = [
         "Antivírus: " + check_antivirus(),
@@ -102,7 +111,8 @@ def check_all():
         "Políticas de Senha: " + check_password_policies(),
         "Software Instalado: " + check_installed_software(),
         "Compartilhamentos de Rede: " + check_network_shares(),
-        "Criptografia de Disco: " + check_disk_encryption()
+        "Criptografia de Disco: " + check_disk_encryption(),
+        "Serviços Críticos: " + check_critical_services()
     ]
     return "\n\n".join(results)
 
@@ -121,12 +131,13 @@ def menu():
         '11': check_installed_software,
         '12': check_network_shares,
         '13': check_disk_encryption,
-        '14': check_all
+        '14': check_critical_services,
+        '15': check_all
     }
     while True:
         clear_screen()
         print("\nMenu de Verificações de Segurança:")
-        for i in range(1, 15):
+        for i in range(1, 16):
             print(f"{i}. {functions[str(i)].__name__.replace('_', ' ').capitalize()}")
         print("0. Sair")
         choice = input("Escolha uma opção: ")
