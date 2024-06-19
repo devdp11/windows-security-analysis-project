@@ -1,4 +1,11 @@
 import subprocess
+import os
+
+def clear_screen():
+    if os.name == 'nt':  # para Windows
+        os.system('cls')
+    else:  # para Linux e Mac
+        os.system('clear')
 
 def run_command(command):
     try:
@@ -75,7 +82,7 @@ def check_disk_encryption():
         if "MountPoint" in result.stdout:
             return f"Criptografia de disco:\n{result.stdout}"
         else:
-            return "Nenhum volume com BitLocker encontrado."
+            return "Nenhum volume com BitLocker (criptografia) encontrado."
     except subprocess.CalledProcessError as e:
         return f"Erro na execução do comando: {e}\nDetalhes do Erro: {e.stderr.decode() if e.stderr else 'Nenhum detalhe disponível.'}"
     except Exception as e:
@@ -117,6 +124,7 @@ def menu():
         '14': check_all
     }
     while True:
+        clear_screen()
         print("\nMenu de Verificações de Segurança:")
         for i in range(1, 15):
             print(f"{i}. {functions[str(i)].__name__.replace('_', ' ').capitalize()}")
@@ -125,7 +133,10 @@ def menu():
         if choice == '0':
             break
         elif choice in functions:
-            print(functions[choice]())
+            result = functions[choice]()
+            print(result)
+            input("Pressione Enter para continuar...")
+            clear_screen()
         else:
             print("Opção inválida, tente novamente.")
 
